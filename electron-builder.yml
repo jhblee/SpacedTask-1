@@ -27,6 +27,9 @@ extraMetadata:
 npmRebuild: true
 nodeGypRebuild: false
 
+asarUnpack:
+  - "**/*.node"
+
 win:
   target:
     - target: nsis
