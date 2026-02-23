@@ -7,14 +7,14 @@ A production-ready, cross-platform spaced-repetition desktop app built with
 
 ## Milestones
 
-| Phase | Scope |
-|-------|-------|
-| 1 — Scaffold | Monorepo structure, root config, TypeScript, ESLint, Prettier |
-| 2 — Core logic | `packages/shared` (types, Zod schemas, pure scheduling functions + unit tests) |
-| 3 — DB layer | `packages/db` (better-sqlite3, embedded migrations, typed query functions + unit tests) |
-| 4 — Electron main | `apps/main` (BrowserWindow, CSP, preload/contextBridge, IPC handlers) |
-| 5 — React UI | `apps/renderer` (React 18, TanStack Query, all components, CSS) |
-| 6 — Packaging | electron-builder config, icon placeholders, GitHub Actions CI |
+| Phase             | Scope                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| 1 — Scaffold      | Monorepo structure, root config, TypeScript, ESLint, Prettier                           |
+| 2 — Core logic    | `packages/shared` (types, Zod schemas, pure scheduling functions + unit tests)          |
+| 3 — DB layer      | `packages/db` (better-sqlite3, embedded migrations, typed query functions + unit tests) |
+| 4 — Electron main | `apps/main` (BrowserWindow, CSP, preload/contextBridge, IPC handlers)                   |
+| 5 — React UI      | `apps/renderer` (React 18, TanStack Query, all components, CSS)                         |
+| 6 — Packaging     | electron-builder config, icon placeholders, GitHub Actions CI                           |
 
 ---
 
@@ -123,6 +123,7 @@ pnpm test:coverage        # with coverage report (threshold: 80%)
 ```
 
 Tests live in:
+
 - `packages/shared/src/__tests__/scheduling.test.ts`
 - `packages/db/src/__tests__/queries.test.ts`
 
@@ -192,10 +193,10 @@ pnpm package:mac
 
 The workflow at `.github/workflows/ci.yml`:
 
-| Trigger | Jobs |
-|---------|------|
-| Push / PR to `main` | `lint-and-test` (Ubuntu, fast) |
-| Tag `v*.*.*` | `lint-and-test` → `build-win` + `build-mac` → `release` |
+| Trigger             | Jobs                                                    |
+| ------------------- | ------------------------------------------------------- |
+| Push / PR to `main` | `lint-and-test` (Ubuntu, fast)                          |
+| Tag `v*.*.*`        | `lint-and-test` → `build-win` + `build-mac` → `release` |
 
 Push a release tag to publish:
 
@@ -211,36 +212,44 @@ Artifacts (`.exe`, `.dmg`) are uploaded to the GitHub Release automatically.
 ## Security Decisions
 
 ### contextIsolation: true
+
 The renderer process runs in an isolated JavaScript world. It cannot access
 Node.js APIs or `require()` — it only sees `window.electronAPI`, which is
 explicitly allow-listed via `contextBridge.exposeInMainWorld`.
 
 ### nodeIntegration: false
+
 Disables Node.js in the renderer entirely. Even if a malicious script were
 injected via XSS (e.g., from a rogue npm dependency), it cannot read the file
 system or execute shell commands.
 
 ### sandbox: true
+
 Enables Chromium's OS-level process sandbox for the renderer, restricting
 syscalls to the minimum needed to render HTML/CSS/JS.
 
 ### Narrow IPC surface
+
 The preload exposes exactly 7 typed functions. Every IPC handler validates its
 input with Zod before touching the database. Unknown channels are silently
 ignored by Electron.
 
 ### Content Security Policy
+
 Applied via `session.defaultSession.webRequest.onHeadersReceived`:
+
 - `default-src 'self'` — no inline scripts, no external resources
 - `script-src 'self'` — only scripts from the same origin (bundled by Vite)
 - `object-src 'none'` — no plugins
 - In production, `'unsafe-inline'` is stripped from `style-src`
 
 ### will-navigate guard
+
 Any attempt to navigate the renderer to an external URL is blocked in the
 main process, preventing phishing-style redirects.
 
 ### Single-instance lock
+
 `app.requestSingleInstanceLock()` prevents multiple app instances from
 writing to the same SQLite database concurrently.
 
@@ -249,36 +258,43 @@ writing to the same SQLite database concurrently.
 ## Design Decisions
 
 ### Why Luxon for dates?
+
 `Date` arithmetic with milliseconds is DST-unsafe. Adding `86400000 ms` on a
 spring-forward day can skip a day. Luxon's `DateTime.plus({ days: N })` adds
 **calendar days**, producing a correct `YYYY-MM-DD` string regardless of DST.
 All dates are stored as `TEXT YYYY-MM-DD` in SQLite — no epoch integers.
 
 ### Why embedded migrations instead of drizzle-kit files?
+
 drizzle-kit generates `.sql` files that must be present at runtime. For a
 packaged Electron app, resolving the migration folder path across dev/packaged
 environments adds fragility. Embedding the SQL in `migrations.ts` is:
+
 - Zero-config at runtime
 - Trivially extended (add a new object to the array)
 - Idempotent (tracked by `schema_migrations` table)
 
 ### Why TanStack Query (React Query)?
+
 Mutations → `invalidateQueries` → instant re-fetch gives a clean
 request/response model without manual state threading. The IPC calls behave
 like async HTTP endpoints — Query is a natural fit.
 
 ### Why pnpm workspaces?
+
 - Strict: packages can only import what they declare in `dependencies`
 - Fast: content-addressable store avoids duplicate hoisting
 - Native support in modern Node tooling (no lerna needed)
 
 ### Why better-sqlite3 over node-sqlite3 / Prisma?
+
 - **Synchronous API** is safe and simple in the main process (no async DB bugs)
 - **No ORM overhead** — queries are explicit, readable, and testable
 - **Fast** — no JS↔native marshalling overhead vs async drivers
 - Prisma and Drizzle Kit add CLI/schema-generation complexity not needed here
 
 ### Assumptions made
+
 - **Package manager:** pnpm 9 with workspaces
 - **Node version:** 20 LTS
 - **Electron version:** 31 (Chromium 126, Node 20)

@@ -15,9 +15,7 @@ declare global {
 }
 
 /** Unwraps an IPC result envelope or throws with the error message. */
-async function unwrap<T>(
-  call: Promise<{ ok: boolean; data?: T; error?: string }>,
-): Promise<T> {
+async function unwrap<T>(call: Promise<{ ok: boolean; data?: T; error?: string }>): Promise<T> {
   const result = await call;
   if (!result.ok || result.data === undefined) {
     throw new Error(result.error ?? 'Unknown IPC error');
@@ -32,6 +30,5 @@ export const ipc = {
   resetTask: (id: string) => unwrap(window.electronAPI.resetTask({ id })),
   deleteTask: (id: string) => unwrap(window.electronAPI.deleteTask({ id })),
   getTodayLocal: () => unwrap(window.electronAPI.getTodayLocal()),
-  setMockDate: (date: string | null) =>
-    unwrap(window.electronAPI.setMockDate({ date })),
+  setMockDate: (date: string | null) => unwrap(window.electronAPI.setMockDate({ date })),
 };

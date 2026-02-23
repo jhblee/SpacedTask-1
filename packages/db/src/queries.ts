@@ -44,9 +44,7 @@ function rowToTask(row: TaskRow): Task {
 
 /** Returns all tasks ordered by createdAt ascending. */
 export function getAllTasks(db: Database.Database): Task[] {
-  const rows = db
-    .prepare<[], TaskRow>('SELECT * FROM tasks ORDER BY created_at ASC')
-    .all();
+  const rows = db.prepare<[], TaskRow>('SELECT * FROM tasks ORDER BY created_at ASC').all();
   return rows.map(rowToTask);
 }
 
@@ -56,11 +54,7 @@ export function getAllTasks(db: Database.Database): Task[] {
  * @param input - Validated input with a trimmed title.
  * @param todayLocal - Current local date YYYY-MM-DD (injected for testability).
  */
-export function createTask(
-  db: Database.Database,
-  input: unknown,
-  todayLocal: string,
-): Task {
+export function createTask(db: Database.Database, input: unknown, todayLocal: string): Task {
   const { title } = CreateTaskInputSchema.parse(input);
   const now = new Date().toISOString();
   const id = randomUUID();
@@ -76,12 +70,14 @@ export function createTask(
     updated_at: now,
   };
 
-  db.prepare(`
+  db.prepare(
+    `
     INSERT INTO tasks
       (id, title, start_date, repetition_index, next_due_date, last_completed_date, created_at, updated_at)
     VALUES
       (@id, @title, @start_date, @repetition_index, @next_due_date, @last_completed_date, @created_at, @updated_at)
-  `).run(row);
+  `,
+  ).run(row);
 
   return rowToTask(row);
 }
@@ -94,16 +90,10 @@ export function createTask(
  *
  * Idempotent: if already completed today, returns the current state unchanged.
  */
-export function completeTask(
-  db: Database.Database,
-  input: unknown,
-  todayLocal: string,
-): Task {
+export function completeTask(db: Database.Database, input: unknown, todayLocal: string): Task {
   const { id } = CompleteTaskInputSchema.parse(input);
 
-  const existing = db
-    .prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?')
-    .get(id);
+  const existing = db.prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?').get(id);
   if (!existing) throw new Error(`Task not found: ${id}`);
 
   // Idempotency guard — already completed today
@@ -115,18 +105,18 @@ export function completeTask(
   const newNextDue = computeNextDueDate(todayLocal, newIndex);
   const now = new Date().toISOString();
 
-  db.prepare(`
+  db.prepare(
+    `
     UPDATE tasks
     SET last_completed_date = ?,
         repetition_index    = ?,
         next_due_date       = ?,
         updated_at          = ?
     WHERE id = ?
-  `).run(todayLocal, newIndex, newNextDue, now, id);
+  `,
+  ).run(todayLocal, newIndex, newNextDue, now, id);
 
-  const updated = db
-    .prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?')
-    .get(id)!;
+  const updated = db.prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?').get(id)!;
   return rowToTask(updated);
 }
 
@@ -137,21 +127,16 @@ export function completeTask(
  *  - lastCompletedDate = null
  *  - nextDueDate = todayLocal + 1 day
  */
-export function resetTask(
-  db: Database.Database,
-  input: unknown,
-  todayLocal: string,
-): Task {
+export function resetTask(db: Database.Database, input: unknown, todayLocal: string): Task {
   const { id } = ResetTaskInputSchema.parse(input);
 
-  const existing = db
-    .prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?')
-    .get(id);
+  const existing = db.prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?').get(id);
   if (!existing) throw new Error(`Task not found: ${id}`);
 
   const now = new Date().toISOString();
 
-  db.prepare(`
+  db.prepare(
+    `
     UPDATE tasks
     SET start_date          = ?,
         repetition_index    = 0,
@@ -159,11 +144,10 @@ export function resetTask(
         last_completed_date = NULL,
         updated_at          = ?
     WHERE id = ?
-  `).run(todayLocal, initialNextDueDate(todayLocal), now, id);
+  `,
+  ).run(todayLocal, initialNextDueDate(todayLocal), now, id);
 
-  const updated = db
-    .prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?')
-    .get(id)!;
+  const updated = db.prepare<[string], TaskRow>('SELECT * FROM tasks WHERE id = ?').get(id)!;
   return rowToTask(updated);
 }
 

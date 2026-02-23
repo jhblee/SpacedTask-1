@@ -47,8 +47,7 @@ export function TaskItem({ task, todayLocal, showCompleted = false }: TaskItemPr
     });
   };
 
-  const isBusy =
-    completeTask.isPending || resetTask.isPending || deleteTask.isPending;
+  const isBusy = completeTask.isPending || resetTask.isPending || deleteTask.isPending;
 
   return (
     <article
@@ -65,16 +64,11 @@ export function TaskItem({ task, todayLocal, showCompleted = false }: TaskItemPr
             onChange={handleComplete}
             disabled={completedToday || isBusy}
             aria-label={
-              completedToday
-                ? `${task.title} — completed today`
-                : `Mark ${task.title} as complete`
+              completedToday ? `${task.title} — completed today` : `Mark ${task.title} as complete`
             }
           />
         )}
-        <label
-          htmlFor={`task-${task.id}`}
-          className="task-item__title"
-        >
+        <label htmlFor={`task-${task.id}`} className="task-item__title">
           {task.title}
         </label>
       </div>

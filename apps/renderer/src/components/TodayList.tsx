@@ -26,9 +26,7 @@ export function TodayList({ tasks, todayLocal }: TodayListProps) {
       </h2>
 
       {dueTasks.length === 0 && completedToday.length === 0 && (
-        <p className="empty-state">
-          No tasks due today. Add a task or check back tomorrow.
-        </p>
+        <p className="empty-state">No tasks due today. Add a task or check back tomorrow.</p>
       )}
 
       {dueTasks.length > 0 && (

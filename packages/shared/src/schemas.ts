@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
 /** Regex for YYYY-MM-DD local date strings */
-const localDateString = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be a YYYY-MM-DD date string');
+const localDateString = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be a YYYY-MM-DD date string');
 
 export const TaskSchema = z.object({
   id: z.string().uuid(),
@@ -17,11 +15,7 @@ export const TaskSchema = z.object({
 });
 
 export const CreateTaskInputSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1, 'Title must not be empty or whitespace')
-    .max(500),
+  title: z.string().trim().min(1, 'Title must not be empty or whitespace').max(500),
 });
 
 export const CompleteTaskInputSchema = z.object({

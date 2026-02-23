@@ -1,13 +1,7 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import type Database from 'better-sqlite3';
 import { DateTime } from 'luxon';
-import {
-  getAllTasks,
-  createTask,
-  completeTask,
-  resetTask,
-  deleteTask,
-} from '@spacedtask/db';
+import { getAllTasks, createTask, completeTask, resetTask, deleteTask } from '@spacedtask/db';
 import { IPC_CHANNELS, SetMockDateInputSchema } from '@spacedtask/shared';
 import { logger } from '../logger';
 
@@ -31,10 +25,7 @@ export function getTodayLocal(): string {
  * @param db - The open SQLite database connection.
  * @param isDev - Set true to enable the test mock-date channel.
  */
-export function registerIpcHandlers(
-  db: Database.Database,
-  isDev: boolean,
-): void {
+export function registerIpcHandlers(db: Database.Database, isDev: boolean): void {
   // ------------------------------------------------------------------
   // tasks:getAll
   // ------------------------------------------------------------------
@@ -50,69 +41,57 @@ export function registerIpcHandlers(
   // ------------------------------------------------------------------
   // tasks:create
   // ------------------------------------------------------------------
-  ipcMain.handle(
-    IPC_CHANNELS.TASKS_CREATE,
-    (_event: IpcMainInvokeEvent, input: unknown) => {
-      try {
-        const today = getTodayLocal();
-        const task = createTask(db, input, today);
-        return { ok: true, data: task };
-      } catch (err) {
-        logger.error('tasks:create error', err);
-        return { ok: false, error: String(err) };
-      }
-    },
-  );
+  ipcMain.handle(IPC_CHANNELS.TASKS_CREATE, (_event: IpcMainInvokeEvent, input: unknown) => {
+    try {
+      const today = getTodayLocal();
+      const task = createTask(db, input, today);
+      return { ok: true, data: task };
+    } catch (err) {
+      logger.error('tasks:create error', err);
+      return { ok: false, error: String(err) };
+    }
+  });
 
   // ------------------------------------------------------------------
   // tasks:complete
   // ------------------------------------------------------------------
-  ipcMain.handle(
-    IPC_CHANNELS.TASKS_COMPLETE,
-    (_event: IpcMainInvokeEvent, input: unknown) => {
-      try {
-        const today = getTodayLocal();
-        const task = completeTask(db, input, today);
-        return { ok: true, data: task };
-      } catch (err) {
-        logger.error('tasks:complete error', err);
-        return { ok: false, error: String(err) };
-      }
-    },
-  );
+  ipcMain.handle(IPC_CHANNELS.TASKS_COMPLETE, (_event: IpcMainInvokeEvent, input: unknown) => {
+    try {
+      const today = getTodayLocal();
+      const task = completeTask(db, input, today);
+      return { ok: true, data: task };
+    } catch (err) {
+      logger.error('tasks:complete error', err);
+      return { ok: false, error: String(err) };
+    }
+  });
 
   // ------------------------------------------------------------------
   // tasks:reset
   // ------------------------------------------------------------------
-  ipcMain.handle(
-    IPC_CHANNELS.TASKS_RESET,
-    (_event: IpcMainInvokeEvent, input: unknown) => {
-      try {
-        const today = getTodayLocal();
-        const task = resetTask(db, input, today);
-        return { ok: true, data: task };
-      } catch (err) {
-        logger.error('tasks:reset error', err);
-        return { ok: false, error: String(err) };
-      }
-    },
-  );
+  ipcMain.handle(IPC_CHANNELS.TASKS_RESET, (_event: IpcMainInvokeEvent, input: unknown) => {
+    try {
+      const today = getTodayLocal();
+      const task = resetTask(db, input, today);
+      return { ok: true, data: task };
+    } catch (err) {
+      logger.error('tasks:reset error', err);
+      return { ok: false, error: String(err) };
+    }
+  });
 
   // ------------------------------------------------------------------
   // tasks:delete
   // ------------------------------------------------------------------
-  ipcMain.handle(
-    IPC_CHANNELS.TASKS_DELETE,
-    (_event: IpcMainInvokeEvent, input: unknown) => {
-      try {
-        const deleted = deleteTask(db, input);
-        return { ok: true, data: deleted };
-      } catch (err) {
-        logger.error('tasks:delete error', err);
-        return { ok: false, error: String(err) };
-      }
-    },
-  );
+  ipcMain.handle(IPC_CHANNELS.TASKS_DELETE, (_event: IpcMainInvokeEvent, input: unknown) => {
+    try {
+      const deleted = deleteTask(db, input);
+      return { ok: true, data: deleted };
+    } catch (err) {
+      logger.error('tasks:delete error', err);
+      return { ok: false, error: String(err) };
+    }
+  });
 
   // ------------------------------------------------------------------
   // app:getTodayLocal

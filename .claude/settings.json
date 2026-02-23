@@ -20,7 +20,9 @@
       "Bash(npm run rebuild:node:*)",
       "Bash(ROOT=\"c:/Users/jemsu/OneDrive/바탕 화면/UC Davis/LearningCode/SpacedTask-1\":*)",
       "Bash(npm test:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run format:check:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\jemsu\\OneDrive\\바탕 화면\\UC Davis\\LearningCode\\SpacedTask-1\\{apps\\{main\\src\\ipc,renderer\\src\\{components,hooks,lib,styles}},packages\\{shared\\src\\__tests__,db\\src\\__tests__},tests\\e2e,.github"

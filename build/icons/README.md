@@ -2,11 +2,11 @@
 
 Place your app icons here before packaging:
 
-| File         | Size       | Platform      |
-|--------------|------------|---------------|
-| `icon.png`   | 512×512    | Linux / base  |
-| `icon.icns`  | multi-size | macOS         |
-| `icon.ico`   | multi-size | Windows       |
+| File        | Size       | Platform     |
+| ----------- | ---------- | ------------ |
+| `icon.png`  | 512×512    | Linux / base |
+| `icon.icns` | multi-size | macOS        |
+| `icon.ico`  | multi-size | Windows      |
 
 ## Generating icons from a PNG
 

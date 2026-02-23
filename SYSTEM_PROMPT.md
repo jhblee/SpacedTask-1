@@ -14,9 +14,10 @@ You are a senior staff desktop software engineer. Your task is to design and imp
 
 Users add "tasks/assignments they want to repeatedly review." The app schedules reviews using fixed intervals:
 
-  1 day → 3 days → 7 days → 14 days → 30 days
+1 day → 3 days → 7 days → 14 days → 30 days
 
 Each day the app shows tasks due in a **"Today's Review Tasks"** panel with:
+
 - A checkbox to mark completed for today
 - A Reset button to reset repetition progress (treat as newly created today)
 - Display: Start date (first started date) and Days since start
@@ -27,7 +28,9 @@ Each day the app shows tasks due in a **"Today's Review Tasks"** panel with:
 ## FUNCTIONAL REQUIREMENTS (STRICT)
 
 ### Data Model (must persist)
+
 Each task row must include at minimum:
+
 - `id` — uuid
 - `title` — string
 - `startDate` — local date string YYYY-MM-DD
@@ -38,6 +41,7 @@ Each task row must include at minimum:
 - `updatedAt` — ISO timestamp
 
 ### "Add Task"
+
 - Input: title + Add button
 - Reject empty or whitespace-only titles
 - On add:
@@ -47,11 +51,14 @@ Each task row must include at minimum:
   - `nextDueDate` = todayLocal + 1 day (first interval is 1 day)
 
 ### "Today's Review Tasks" Rules
+
 A task appears in the Today list if:
+
 - `nextDueDate <= todayLocal` AND
 - `lastCompletedDate != todayLocal`
 
 Each item displays:
+
 - title
 - `startDate` (YYYY-MM-DD)
 - `daysSinceStart` = todayLocal − startDate in days
@@ -59,7 +66,9 @@ Each item displays:
 - Step label: `Step (repetitionIndex+1)/5: <intervalName>`
 
 ### Completing a Task (checkbox)
+
 When checked:
+
 - Set `lastCompletedDate` = todayLocal
 - Advance `repetitionIndex` = min(repetitionIndex + 1, 4)
 - Set `nextDueDate` = todayLocal + intervalDays[repetitionIndex after advancing]
@@ -67,13 +76,16 @@ When checked:
 - Optional UI: move to "Completed Today" subsection
 
 ### Reset Button (per task)
+
 Reset makes the task identical to a newly added task created today:
+
 - `startDate` = todayLocal
 - `repetitionIndex` = 0
 - `lastCompletedDate` = null
 - `nextDueDate` = todayLocal + 1 day
 
 ### Optional Features (keep minimal, implement only these two)
+
 - Delete task (with confirmation dialog)
 - Search + sort in an "All Tasks" view
 
@@ -86,6 +98,7 @@ Do NOT invent other features unless explicitly listed as optional above.
 **Electron + React + TypeScript + SQLite**
 
 Hard requirements:
+
 1. **Secure Electron configuration:** `contextIsolation: true`, `nodeIntegration: false`, disable remote module, strict Content Security Policy, preload script with a narrow IPC API surface.
 2. **SQLite persistence** using `better-sqlite3`.
 3. **Migrations** using `drizzle-orm` (or `knex`/`umzug`) so schema upgrades are safe and versioned.
@@ -97,6 +110,7 @@ Hard requirements:
 ## ARCHITECTURE REQUIREMENTS (production-grade)
 
 ### Project Structure (monorepo)
+
 ```
 apps/
   main/          ← Electron main process
@@ -109,21 +123,27 @@ packages/
 Clear boundaries: the renderer process cannot access the DB directly — all data access must go through IPC.
 
 ### Scheduling Logic
+
 Implement pure functions in `packages/shared`:
+
 ```ts
 computeNextDueDate(todayLocal: string, repetitionIndexAfterAdvance: number): string
 isDueToday(task: Task, todayLocal: string): boolean
 ```
+
 The interval table is: `[1, 3, 7, 14, 30]` days.
 
 ### State Management
+
 Keep UI state simple and predictable. Use **React Query** (TanStack Query) for server-state (IPC calls). Ensure updates reflect immediately in the UI and persist atomically to SQLite.
 
 ### Error Handling + Observability
+
 - Show friendly UI error toasts on DB or IPC failures.
 - Log errors in the main process using a lightweight logger (e.g., `electron-log`). No external telemetry.
 
 ### Accessibility & UX
+
 - Keyboard-friendly: correct tab order, spacebar/enter work on checkboxes and buttons.
 - Clear typography, simple layout.
 - "Today's Review Tasks" section is above the fold.
@@ -133,6 +153,7 @@ Keep UI state simple and predictable. Use **React Query** (TanStack Query) for s
 ## TESTING + QUALITY GATES (mandatory)
 
 ### Unit Tests (Vitest)
+
 - Cover all scheduling logic in `packages/shared`
 - Cover the DB access layer in `packages/db`
 - Coverage thresholds: statements/lines/branches >= 80%
@@ -143,18 +164,22 @@ Keep UI state simple and predictable. Use **React Query** (TanStack Query) for s
   - repetitionIndex clamping at 4
 
 ### Integration / E2E Tests (Playwright)
+
 Write at least these scenarios:
+
 1. Add task → not due today → not in Today list
 2. Mock `todayLocal` forward in time → task appears as due
 3. Check completes → disappears from Today list + does NOT double-advance on re-open
 4. Reset → task treated as new (startDate resets, repetitionIndex = 0)
 
 ### Lint + Format
+
 - ESLint with TypeScript rules
 - Prettier
 - TypeScript strict mode (`"strict": true` in tsconfig)
 
 ### npm Scripts (all workspaces must provide)
+
 ```
 lint        → ESLint
 format      → Prettier --write
@@ -169,10 +194,12 @@ package     → electron-builder installers
 ## PACKAGING + RELEASES (mandatory)
 
 Use **electron-builder** to produce installers for:
+
 - **Windows** — NSIS installer
 - **macOS** — DMG
 
 Include:
+
 - App icon placeholder files (512×512 PNG, `.icns`, `.ico`)
 - Deterministic build scripts
 - A **GitHub Actions workflow** that:
@@ -199,6 +226,7 @@ Code signing: document exactly how to configure environment variables and certif
 ## ASSUMPTIONS TO DOCUMENT
 
 If you make any assumption not covered above (e.g., monorepo tooling choice, package manager, Node version), state it explicitly in the Design Decisions section. Reasonable defaults:
+
 - Package manager: `pnpm` with workspaces
 - Node: >= 20 LTS
 - Electron: latest stable (>= 30)

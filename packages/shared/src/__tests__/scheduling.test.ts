@@ -40,15 +40,11 @@ describe('computeNextDueDate', () => {
   });
 
   it('clamps index above 4 to 4', () => {
-    expect(computeNextDueDate('2024-01-01', 99)).toBe(
-      computeNextDueDate('2024-01-01', 4),
-    );
+    expect(computeNextDueDate('2024-01-01', 99)).toBe(computeNextDueDate('2024-01-01', 4));
   });
 
   it('clamps negative index to 0', () => {
-    expect(computeNextDueDate('2024-01-01', -1)).toBe(
-      computeNextDueDate('2024-01-01', 0),
-    );
+    expect(computeNextDueDate('2024-01-01', -1)).toBe(computeNextDueDate('2024-01-01', 0));
   });
 
   it('crosses month boundary correctly', () => {

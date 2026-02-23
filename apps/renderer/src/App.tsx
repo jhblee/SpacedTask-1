@@ -28,9 +28,7 @@ export function App() {
   }
 
   // Fallback: if IPC fails to provide todayLocal use client-side date
-  const today =
-    todayLocal ??
-    new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD
+  const today = todayLocal ?? new Date().toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD
 
   return (
     <div className="app">

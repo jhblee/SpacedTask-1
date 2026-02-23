@@ -65,7 +65,7 @@ Renderer (React) → window.electronAPI → preload.ts (contextBridge) → ipcMa
 
 ```ts
 import { DateTime } from 'luxon';
-DateTime.fromISO(dateStr).plus({ days: n }).toISODate()
+DateTime.fromISO(dateStr).plus({ days: n }).toISODate();
 ```
 
 `getTodayLocal()` in `apps/main/src/ipc/handlers.ts` returns `DateTime.now().toISODate()` (the machine's local date). In E2E tests, this is overridden via the `__test__:setMockDate` IPC channel (dev/test only).
@@ -96,6 +96,7 @@ node_modules/better-sqlite3/build/Release/
 `scripts/sqlite-swap.js` swaps the active binary using three-way renames (OneDrive blocks `unlink` on `.node` files but allows `rename`). `npm test` calls `rebuild:node` first; `npm start` calls `rebuild:electron` first.
 
 If you ever need to repopulate these caches (e.g. after `npm install` overwrites them):
+
 - **Node 24 build**: The prebuilt tarball is downloaded from GitHub releases and extracted manually (see `scripts/sqlite-swap.js` bootstrap logic).
 - **Electron build**: `cd apps/main && npx @electron/rebuild -f -w better-sqlite3`
 

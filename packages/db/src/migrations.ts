@@ -41,9 +41,7 @@ export function runMigrations(db: Database.Database): void {
   const checkStmt = db.prepare<[string], { id: number }>(
     'SELECT id FROM schema_migrations WHERE name = ?',
   );
-  const recordStmt = db.prepare(
-    'INSERT INTO schema_migrations (name, run_at) VALUES (?, ?)',
-  );
+  const recordStmt = db.prepare('INSERT INTO schema_migrations (name, run_at) VALUES (?, ?)');
 
   for (const migration of MIGRATIONS) {
     const existing = checkStmt.get(migration.name);

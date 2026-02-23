@@ -83,9 +83,7 @@ function createWindow(db: import('better-sqlite3').Database): BrowserWindow {
     void win.loadURL('http://localhost:5173');
     win.webContents.openDevTools();
   } else {
-    void win.loadFile(
-      path.join(__dirname, '../../renderer/dist/index.html'),
-    );
+    void win.loadFile(path.join(__dirname, '../../renderer/dist/index.html'));
   }
 
   registerIpcHandlers(db, isDev);
