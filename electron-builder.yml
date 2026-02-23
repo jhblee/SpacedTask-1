@@ -9,10 +9,7 @@ directories:
 files:
   - apps/main/dist/**
   - apps/renderer/dist/**
-  - packages/shared/dist/**
-  - packages/db/dist/**
-  - node_modules/**
-  - "!node_modules/.cache"
+  - node_modules/better-sqlite3/**
   - "!**/*.map"
 
 extraResources:
