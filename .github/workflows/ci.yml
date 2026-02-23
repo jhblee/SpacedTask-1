@@ -3,12 +3,9 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    tags: ['v*.*.*']
   pull_request:
     branches: [main]
-  # Build installers on version tags
-  push:
-    tags:
-      - 'v*.*.*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -25,33 +22,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: '24'
+          cache: 'npm'
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install dependencies (skip native postinstall)
+        run: npm install --ignore-scripts
+
+      - name: Rebuild better-sqlite3 for Node.js
+        run: npm rebuild better-sqlite3
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
 
       - name: Format check
-        run: pnpm format:check
+        run: npm run format:check
 
       - name: Build shared + db packages
         run: |
-          pnpm --filter=@spacedtask/shared build
-          pnpm --filter=@spacedtask/db build
+          npm run build -w packages/shared
+          npm run build -w packages/db
 
-      - name: Unit tests (with coverage)
-        run: pnpm test:coverage
+      - name: Unit tests with coverage
+        run: npm run test --workspaces --if-present
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
@@ -74,30 +69,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build all packages
-        run: pnpm build
+        run: npm install
 
       - name: Package Windows installer
-        run: pnpm package:win
+        run: npm run package:win
         env:
-          # Code signing (optional — skip if not configured)
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing (uncomment when certificate is configured):
           # CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           # CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -114,33 +101,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build all packages
-        run: pnpm build
+        run: npm install
 
       - name: Package macOS DMG
-        run: pnpm package:mac
+        run: npm run package:mac
         env:
-          # Code signing + notarization (optional):
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing + notarization (uncomment when configured):
           # CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
           # CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
           # APPLE_ID: ${{ secrets.APPLE_ID }}
           # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
