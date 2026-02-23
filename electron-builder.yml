@@ -1,0 +1,65 @@
+appId: com.spacedtask.app
+productName: SpacedTask
+copyright: Copyright © 2024
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - apps/main/dist/**
+  - apps/renderer/dist/**
+  - packages/shared/dist/**
+  - packages/db/dist/**
+  - node_modules/**
+  - "!node_modules/.cache"
+  - "!**/*.map"
+
+extraResources:
+  - from: build/icons
+    to: icons
+
+main: apps/main/dist/index.js
+
+npmRebuild: true
+nodeGypRebuild: false
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: build/icons/icon.ico
+  # Code signing (configure via env vars):
+  # CSC_LINK: path or base64 of your .pfx certificate
+  # CSC_KEY_PASSWORD: certificate password
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+
+mac:
+  target:
+    - target: dmg
+      arch: [x64, arm64]
+  icon: build/icons/icon.icns
+  category: public.app-category.productivity
+  # Code signing (configure via env vars):
+  # CSC_LINK: path or base64 of your .p12 Developer ID certificate
+  # CSC_KEY_PASSWORD: certificate password
+  # APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID for notarization
+
+dmg:
+  title: SpacedTask
+  window:
+    width: 540
+    height: 380
+
+linux:
+  target: AppImage
+  category: Office
+
+publish:
+  provider: github
+  releaseType: release

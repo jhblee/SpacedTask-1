@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(npm --version:*)",
+      "Bash(pnpm --version:*)",
+      "Bash(pnpm install:*)",
+      "Bash(echo:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm rebuild:*)",
+      "Bash(npm show:*)",
+      "Read(//tmp/**)",
+      "Bash(NODE_ENV=development node_modules/electron/dist/electron.exe:*)",
+      "Bash(env:*)",
+      "Bash(ELECTRON_RUN_AS_NODE= node_modules/electron/dist/electron.exe:*)",
+      "Bash(unset:*)",
+      "Bash(node_modules/electron/dist/electron.exe:*)",
+      "Bash(npx @electron/rebuild:*)",
+      "Bash(node_modules/.bin/cross-env --version)",
+      "Bash(npm run rebuild:node:*)",
+      "Bash(ROOT=\"c:/Users/jemsu/OneDrive/바탕 화면/UC Davis/LearningCode/SpacedTask-1\":*)",
+      "Bash(npm test:*)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\jemsu\\OneDrive\\바탕 화면\\UC Davis\\LearningCode\\SpacedTask-1\\{apps\\{main\\src\\ipc,renderer\\src\\{components,hooks,lib,styles}},packages\\{shared\\src\\__tests__,db\\src\\__tests__},tests\\e2e,.github"
+    ]
+  }
+}
