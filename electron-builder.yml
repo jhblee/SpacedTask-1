@@ -9,7 +9,8 @@ directories:
 files:
   - apps/main/dist/**
   - apps/renderer/dist/**
-  - node_modules/better-sqlite3/**
+  - from: node_modules/better-sqlite3
+    to: apps/main/dist/node_modules/better-sqlite3
   - "!**/*.map"
 
 extraResources:
