@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import type { Task } from '@spacedtask/shared';
-import { stepLabel, daysSinceStart } from '@spacedtask/shared';
 import { TaskItem } from './TaskItem';
 
 type SortField = 'title' | 'startDate' | 'nextDueDate' | 'repetitionIndex';

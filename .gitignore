@@ -1,5 +1,9 @@
 node_modules/
 dist/
+# better-sqlite3 ABI swap cache files (local dev only)
+*.node.node137
+*.node.e125
+*.node.swapping
 release/
 *.db
 *.db-shm

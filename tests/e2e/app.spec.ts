@@ -114,7 +114,6 @@ test('task appears in Today list when date advances to nextDueDate', async () =>
 // Test: Check completes → task leaves Today list + no double-advance on reload
 // ---------------------------------------------------------------------------
 test('completing a task removes it from Today list and does not double-advance on reload', async () => {
-  const mockDate = '2024-06-02';
   const { app, page } = await launchApp('2024-06-01');
 
   try {
