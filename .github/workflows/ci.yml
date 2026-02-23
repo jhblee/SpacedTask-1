@@ -80,10 +80,10 @@ jobs:
 
       - name: Package Windows installer
         run: npm run package:win
-        env:
-          # Code signing (uncomment when certificate is configured):
-          # CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          # CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        # Code signing env vars (uncomment when certificate is configured):
+        # env:
+        #   CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+        #   CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
 
       - name: Upload Windows artifact
         uses: actions/upload-artifact@v4
@@ -111,13 +111,13 @@ jobs:
 
       - name: Package macOS DMG
         run: npm run package:mac
-        env:
-          # Code signing + notarization (uncomment when configured):
-          # CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          # CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
-          # APPLE_ID: ${{ secrets.APPLE_ID }}
-          # APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          # APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        # Code signing + notarization env vars (uncomment when configured):
+        # env:
+        #   CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+        #   CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+        #   APPLE_ID: ${{ secrets.APPLE_ID }}
+        #   APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        #   APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Upload macOS artifact
         uses: actions/upload-artifact@v4
